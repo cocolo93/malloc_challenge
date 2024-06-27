@@ -79,10 +79,23 @@ void *my_malloc(size_t size) {
   my_metadata_t *prev = NULL;
   // First-fit: Find the first free slot the object fits.
   // TODO: Update this logic to Best-fit!
-  while (metadata && metadata->size < size) {
+
+  // 2つの要素を使ってfree_listを辿る
+  my_metadata_t *best_fit = NULL;
+  my_metadata_t *best_fit_prev = NULL;
+
+  // dataのサイズ以上で、かつbest_fitに入っている値よりも小さい場合はそれをbest_fitに入れる
+  while (metadata) {
+    if (metadata->size >= size && (!best_fit || metadata->size < best_fit->size)) {
+      best_fit = metadata;
+      best_fit_prev = prev;
+    }
     prev = metadata;
     metadata = metadata->next;
   }
+
+  metadata = best_fit;
+  prev = best_fit_prev;
   // now, metadata points to the first free slot
   // and prev is the previous entry.
 
